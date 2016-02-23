@@ -7,7 +7,7 @@ if [ -z "$DISK" ]; then
 	exit 3
 fi
 
-STATE=`grep -E ^${DISK} /proc/mdstat -A 1`
+STATE=`grep -E "^${DISK} " /proc/mdstat -A 1`
 
 if [ $? -ne 0 ]; then
 	echo "Failed to query array ${DISK}"
