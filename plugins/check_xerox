@@ -1,0 +1,49 @@
+#!/usr/bin/python3
+
+import sys
+import urllib.request
+import re
+
+if len(sys.argv) < 2:
+	print('No host specified')
+	sys.exit(3)
+
+
+ERROR = 0
+WARNING = 10
+
+host=sys.argv[1]
+
+u = urllib.request.urlopen('http://%s/suppliessum.htm'%host)
+l = [s.decode('utf-8') for s in u.readlines()]
+l2 = [x for x in l if 'AVAILABEL' in x and 'hidden' in x]
+
+infos=[]
+warnings=[]
+errors=[]
+
+for color_line in l2:
+	r = re.match('.*name="AVAILABEL(.*)TONER.*value="([0-9]*)".*', color_line)
+	color = r.group(1)
+	value = int(r.group(2))
+	if value <= ERROR:
+		errors.append('%s is VERY LOW (%d%%)'%(color, value))
+	elif value <= WARNING:
+		warnings.append('%s is LOW (%d%%)'%(color, value))
+	else:
+		infos.append('%s is OK (%d%%)'%(color, value))
+
+for x in errors:
+	print (x)
+for x in warnings:
+	print (x)
+for x in infos:
+	print (x)
+
+
+if len(errors) > 0:
+	sys.exit(2)
+if len(warnings) > 0:
+	sys.exit(1)
+
+sys.exit(0)
