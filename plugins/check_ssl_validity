@@ -1,0 +1,30 @@
+#!/usr/bin/python3
+
+import subprocess
+import datetime
+import sys
+
+
+n = datetime.datetime.now()
+if len(sys.argv) < 2:
+	print('Argumets missing')
+	sys.exit(4)
+
+
+ret = 0
+for filename in sys.argv[1:]:
+
+	a = subprocess.check_output('LC_ALL=C LANG=C openssl x509 -in %s -noout -text|grep "Not After"|cut -d \: -f 2-'%filename,shell=True)
+	d = datetime.datetime.strptime(a.strip().decode('utf-8'),'%b %d %X %Y GMT')
+
+	left = (d - n).days
+	if left < 0:
+		print('Certificate %s is invalid!'%(filename))
+		ret = 2
+	if left < 7:
+		print('Certificate %s has only %d days left'%(filename,left))
+		ret = 1
+
+	print('Certificate %s has %d days left'%(filename,left))
+
+sys.exit(ret)
