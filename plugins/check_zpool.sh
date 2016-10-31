@@ -17,7 +17,7 @@ if [ -z "$1" ]; then
 fi
 
 #COUNT=$(glsa-check -q -l affected 2>/dev/null|grep "\[N\]"|wc -l)
-STATE=$( zpool status $1 | grep state|cut -f 2 -d \: |tr -d ' ')
+STATE=$( sudo /sbin/zpool status $1 | grep state|cut -f 2 -d \: |tr -d ' ')
 
 if [ "$?" -ne "0" ]; then
 	echo "Command failed" 
